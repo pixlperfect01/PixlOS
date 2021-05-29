@@ -37,7 +37,14 @@ stack_bottom:
 stack_top:
 
 .section .data
-
+gdt:
+	gdt_null:
+		dq 0
+	gdt_code:
+		dw 0FFFFh
+		dw 0
+		db 0
+		db 10011010b
  
 /*
 The linker script specifies _start as the entry point to the kernel and the
