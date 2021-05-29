@@ -35,6 +35,9 @@ undefined behavior.
 stack_bottom:
 .skip 16384 # 16 KiB
 stack_top:
+
+.section .data
+
  
 /*
 The linker script specifies _start as the entry point to the kernel and the
