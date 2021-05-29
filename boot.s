@@ -45,7 +45,20 @@ gdt:
 		dw 0
 		db 0
 		db 10011010b
- 
+		db 11001111b
+		db 0
+	gdt_data:
+		dw 0FFFFh
+		dw 0
+		db 0
+		db 10010010b
+		db 11001111b
+		db 0
+ 	gdt_end
+	
+	gtd_desc:
+		db gdt_end - gdt
+		dw gdt
 /*
 The linker script specifies _start as the entry point to the kernel and the
 bootloader will jump to this position once the kernel has been loaded. It
@@ -55,6 +68,9 @@ doesn't make sense to return from this function as the bootloader is gone.
 .global _start
 .type _start, @function
 _start:
+	xor ax, ax
+	mov ds, ax
+	lgdt [gdt_desc]
 	/*
 	The bootloader has loaded us into 32-bit protected mode on a x86
 	machine. Interrupts are disabled. Paging is disabled. The processor
