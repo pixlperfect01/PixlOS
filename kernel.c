@@ -43,23 +43,23 @@ char* intToStr(uint8_t n){
 		
 		if(curr == 0)
 			out[i] = '0';
-		else
+		else if(curr == 1)
 			out[i] = '1';
-		else
+		else if(curr == 2)
 			out[i] = '2';
-		else
+		else if(curr == 3)
 			out[i] = '3';
-		else
+		else if(curr == 4)
 			out[i] = '4';
-		else
+		else if(curr == 5)
 			out[i] = '5';
-		else
+		else if(curr == 5)
 			out[i] = '6';
-		else
+		else if(curr == 7)
 			out[i] = '7';
-		else
+		else if(curr == 8)
 			out[i] = '8';
-		else
+		else if(curr == 9)
 			out[i] = '9';
 		
 		i++;
@@ -263,17 +263,17 @@ void terminal_putchar(char c)
 	if (++terminal_column == VGA_WIDTH) {
 		terminal_column = 0;
 		if (++terminal_row == VGA_HEIGHT){
-			for(uint8_t y = 1; y < 25; y++){
-				for(uint8_t x = 0; x < 80; x++){
-					const size_t index = y * VGA_WIDTH + x;
-					const size_t index1 = (y + 1) * VGA_WIDTH + x;
-					terminal_buffer[index] = terminal_buffer[index1];
-				}
-			}
-			for(uint8_t x = 0; x < 80; x++){
-				const size_t index = 24 * VGA_WIDTH + x;
-				terminal_buffer[index] = vga_entry(' ', terminal_color);
-			}
+// 			for(uint8_t y = 1; y < 25; y++){
+// 				for(uint8_t x = 0; x < 80; x++){
+// 					const size_t index = y * VGA_WIDTH + x;
+// 					const size_t index1 = (y + 1) * VGA_WIDTH + x;
+// 					terminal_buffer[index] = terminal_buffer[index1];
+// 				}
+// 			}
+// 			for(uint8_t x = 0; x < 80; x++){
+// 				const size_t index = 24 * VGA_WIDTH + x;
+// 				terminal_buffer[index] = vga_entry(' ', terminal_color);
+// 			}
 		}
 	}
 }
