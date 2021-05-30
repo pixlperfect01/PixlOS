@@ -1,1 +1,4 @@
-
+double acos(double x)
+{
+  
+}
