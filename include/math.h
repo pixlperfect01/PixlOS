@@ -1,4 +1,4 @@
 double acos(double x)
 {
-  
+
 }
