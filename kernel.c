@@ -295,6 +295,6 @@ void kernel_main(void)
 	terminal_initialize();
  	for(uint8_t i = 0; i < 64; i++){
 		char b[256];
-		terminal_writestring(sprintf(b, "%d) Hello, kernel World!\n", i));
+		terminal_writestring(sprintf(b, "%d) Hello, kernel World!\n", i+1));
 	}
 }
