@@ -24,8 +24,8 @@ double sqrt(double x)
 
 double sine(double x)
 {
-    const double B = 4/pi;
-    const double C = -4/(pi*pi);	
+    const double B = 4/3.141592653;
+    const double C = -4/(3.141592653*3.141592653);	
 
     double y = B * x + C * x * abs(x);
 
