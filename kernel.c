@@ -31,6 +31,42 @@ enum vga_color {
 	VGA_COLOR_LIGHT_BROWN = 14,
 	VGA_COLOR_WHITE = 15,
 };
+
+char* intToStr(uint8_t n){
+	char* out = (char*) 0x00;
+	uint8_t i = 0;
+	while(n > 0)
+	{
+		uint8_t curr_c;
+		uint16_t curr = n % 10;
+		n /= 10;
+		
+		if(curr == 0)
+			out[i] = '0';
+		else
+			out[i] = '1';
+		else
+			out[i] = '2';
+		else
+			out[i] = '3';
+		else
+			out[i] = '4';
+		else
+			out[i] = '5';
+		else
+			out[i] = '6';
+		else
+			out[i] = '7';
+		else
+			out[i] = '8';
+		else
+			out[i] = '9';
+		
+		i++;
+	}
+	
+	return out;
+}
  
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) 
 {
@@ -40,6 +76,138 @@ static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg)
 static inline uint16_t vga_entry(unsigned char uc, uint8_t color) 
 {
 	return (uint16_t) uc | (uint16_t) color << 8;
+}
+
+#define min(a,b) __extension__\
+    ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+       _a < _b ? _a : _b; })
+
+enum flag_itoa {
+    FILL_ZERO = 1,
+    PUT_PLUS = 2,
+    PUT_MINUS = 4,
+    BASE_2 = 8,
+    BASE_10 = 16,
+};
+
+static char * sitoa(char * buf, unsigned int num, int width, enum flag_itoa flags)
+{
+    unsigned int base;
+    if (flags & BASE_2)
+        base = 2;
+    else if (flags & BASE_10)
+        base = 10;
+    else
+        base = 16;
+
+    char tmp[32];
+    char *p = tmp;
+    do {
+        int rem = num % base;
+        *p++ = (rem <= 9) ? (rem + '0') : (rem + 'a' - 0xA);
+    } while ((num /= base));
+    width -= p - tmp;
+    char fill = (flags & FILL_ZERO)? '0' : ' ';
+    while (0 <= --width) {
+        *(buf++) = fill;
+    }
+    if (flags & PUT_MINUS)
+        *(buf++) = '-';
+    else if (flags & PUT_PLUS)
+        *(buf++) = '+';
+    do
+        *(buf++) = *(--p);
+    while (tmp < p);
+    return buf;
+}
+
+int my_vsprintf(char * buf, const char * fmt, va_list va)
+{
+    char c;
+    const char *save = buf;
+
+    while ((c  = *fmt++)) {
+        int width = 0;
+        enum flag_itoa flags = 0;
+        if (c != '%') {
+            *(buf++) = c;
+            continue;
+        }
+    redo_spec:
+        c  = *fmt++;
+        switch (c) {
+        case '%':
+            *(buf++) = c;
+            break;
+        case 'c':;
+            *(buf++) = va_arg(va, int);
+            break;
+        case 'd':;
+            int num = va_arg(va, int);
+            if (num < 0) {
+                num = -num;
+                flags |= PUT_MINUS;
+            }
+            buf = sitoa(buf, num, width, flags | BASE_10);
+            break;
+        case 'u':
+            buf = sitoa(buf, va_arg(va, unsigned int), width, flags | BASE_10);
+            break;
+        case 'x':
+            buf = sitoa(buf, va_arg(va, unsigned int), width, flags);
+            break;
+        case 'b':
+            buf = sitoa(buf, va_arg(va, unsigned int), width, flags | BASE_2);
+            break;
+        case 's':;
+            const char *p  = va_arg(va, const char *);
+            if (p) {
+                while (*p)
+                    *(buf++) = *(p++);
+            }
+            break;
+        case 'm':;
+            const uint8_t *m  = va_arg(va, const uint8_t *);
+            width = min(width, 64); // buffer limited to 256!
+            if (m)
+                for (;;) {
+                    buf = sitoa(buf, *(m++), 2, FILL_ZERO);
+                    if (--width <= 0)
+                        break;
+                    *(buf++) = ':';
+                }
+            break;
+        case '0':
+            if (!width)
+                flags |= FILL_ZERO;
+            // fall through
+        case '1'...'9':
+            width = width * 10 + c - '0';
+            goto redo_spec;
+        case '*':
+            width = va_arg(va, unsigned int);
+            goto redo_spec;
+        case '+':
+            flags |= PUT_PLUS;
+            goto redo_spec;
+        case '\0':
+        default:
+            *(buf++) = '?';
+        }
+        width = 0;
+    }
+    *buf = '\0';
+    return buf - save;
+}
+
+int sprintf(char * buf, const char * fmt, ...)
+{
+    va_list va;
+    va_start(va,fmt);
+    int ret = my_vsprintf(buf, fmt, va);
+    va_end(va);
+    return ret;
 }
  
 size_t strlen(const char* str) 
@@ -125,70 +293,8 @@ void kernel_main(void)
 {
 	/* Initialize terminal interface */
 	terminal_initialize();
- 
-	/* I cant cast for some rsn */
-	terminal_writestring("1) Hello, kernel World!\n");
-	terminal_writestring("2) Hello, kernel World!\n");
-	terminal_writestring("3) Hello, kernel World!\n");
-	terminal_writestring("4) Hello, kernel World!\n");
-	terminal_writestring("5) Hello, kernel World!\n");
-	terminal_writestring("6) Hello, kernel World!\n");
-	terminal_writestring("7) Hello, kernel World!\n");
-	terminal_writestring("8) Hello, kernel World!\n");
-	terminal_writestring("9) Hello, kernel World!\n");
-	terminal_writestring("10) Hello, kernel World!\n");
-	terminal_writestring("11) Hello, kernel World!\n");
-	terminal_writestring("12) Hello, kernel World!\n");
-	terminal_writestring("13) Hello, kernel World!\n");
-	terminal_writestring("14) Hello, kernel World!\n");
-	terminal_writestring("15) Hello, kernel World!\n");
-	terminal_writestring("16) Hello, kernel World!\n");
-	terminal_writestring("17) Hello, kernel World!\n");
-	terminal_writestring("18) Hello, kernel World!\n");
-	terminal_writestring("19) Hello, kernel World!\n");
-	terminal_writestring("20) Hello, kernel World!\n");
-	terminal_writestring("21) Hello, kernel World!\n");
-	terminal_writestring("22) Hello, kernel World!\n");
-	terminal_writestring("23) Hello, kernel World!\n");
-	terminal_writestring("24) Hello, kernel World!\n");
-	terminal_writestring("25) Hello, kernel World!\n");
-	terminal_writestring("26) Hello, kernel World!\n");
-	terminal_writestring("27) Hello, kernel World!\n");
-	terminal_writestring("28) Hello, kernel World!\n");
-	terminal_writestring("29) Hello, kernel World!\n");
-	terminal_writestring("30) Hello, kernel World!\n");
-	terminal_writestring("31) Hello, kernel World!\n");
-	terminal_writestring("32) Hello, kernel World!\n");
-	terminal_writestring("33) Hello, kernel World!\n");
-	terminal_writestring("34) Hello, kernel World!\n");
-	terminal_writestring("35) Hello, kernel World!\n");
-	terminal_writestring("36) Hello, kernel World!\n");
-	terminal_writestring("37) Hello, kernel World!\n");
-	terminal_writestring("38) Hello, kernel World!\n");
-	terminal_writestring("39) Hello, kernel World!\n");
-	terminal_writestring("40) Hello, kernel World!\n");
-	terminal_writestring("41) Hello, kernel World!\n");
-	terminal_writestring("42) Hello, kernel World!\n");
-	terminal_writestring("43) Hello, kernel World!\n");
-	terminal_writestring("44) Hello, kernel World!\n");
-	terminal_writestring("45) Hello, kernel World!\n");
-	terminal_writestring("46) Hello, kernel World!\n");
-	terminal_writestring("47) Hello, kernel World!\n");
-	terminal_writestring("48) Hello, kernel World!\n");
-	terminal_writestring("49) Hello, kernel World!\n");
-	terminal_writestring("50) Hello, kernel World!\n");
-	terminal_writestring("51) Hello, kernel World!\n");
-	terminal_writestring("52) Hello, kernel World!\n");
-	terminal_writestring("53) Hello, kernel World!\n");
-	terminal_writestring("54) Hello, kernel World!\n");
-	terminal_writestring("55) Hello, kernel World!\n");
-	terminal_writestring("56) Hello, kernel World!\n");
-	terminal_writestring("57) Hello, kernel World!\n");
-	terminal_writestring("58) Hello, kernel World!\n");
-	terminal_writestring("59) Hello, kernel World!\n");
-	terminal_writestring("60) Hello, kernel World!\n");
-	terminal_writestring("61) Hello, kernel World!\n");
-	terminal_writestring("62) Hello, kernel World!\n");
-	terminal_writestring("63) Hello, kernel World!\n");
-	terminal_writestring("64) Hello, kernel World!");
+ 	for(uint8_t i = 0; i < 64; i++){
+		char b[256];
+		terminal_writestring(sprintf(b, "%d) Hello, kernel World!\n", i));
+	}
 }
