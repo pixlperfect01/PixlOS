@@ -42,6 +42,17 @@ unsigned long long fac(uint8_t x){
 	return y;
 }
 
-double ln(double x){
+double ln(double x, double eps){
+	double yn = x - 1;
+	double yn1 = yn;
+	do {
+		yn = yn1;
+		yn1 = yn + 2 * (x - exp(yn)) / (x + exp(yn));
+	} while ((yn - yn1) > 0 ? (yn - yn1) : -(yn - yn1) > epsilon);
 	
+	return yn1;
+}
+
+double log(double x, double n, double eps){
+	return ln(x, eps) / ln(n, eps);
 }
