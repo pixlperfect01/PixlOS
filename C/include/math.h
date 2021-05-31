@@ -12,7 +12,7 @@ double exp(double x){
 	double oupt = pow(2.718281828459, ipart);
 	if(fpart > 0.5)
 	{
-		oupt *= 1.6487212707 + ((fpart - 0.5) / ( 0.5)) * (1.06956056);
+		oupt *= 1.6487212707 + ((fpart - 0.5) / (0.5)) * (1.06956056);
 	} else if(fpart < 0.5)
 	{
 		oupt *= 1 + (fpart / 0.5 * 0.6487212707);
@@ -22,37 +22,32 @@ double exp(double x){
 	return oupt;
 }
 
-double pow(double x, uint16_t y){
-	double s = x;
-	while(y-->0){
-		x *= s;
-	}
-	return x;
+double pow(double x, double y){
+	// exp(y*ln(x))
+	return exp(y*ln(x));
 }
 
-double powf(double x, double y){
-	
-}
+// unsigned long long fac(uint8_t x){
+// 	unsigned long long y = 1;
+// 	while(x-->0){
+// 		y *= x;
+// 	}
+// 	return y;
+// }
 
-unsigned long long fac(uint8_t x){
-	unsigned long long y = 1;
-	while(x-->0){
-		y *= x;
-	}
-	return y;
-}
-
-double ln(double x, double eps){
+double log(double x){
 	double yn = x - 1;
 	double yn1 = yn;
+	double eps = 0.00001;
 	do {
 		yn = yn1;
 		yn1 = yn + 2 * (x - exp(yn)) / (x + exp(yn));
-	} while ((yn - yn1) > 0 ? (yn - yn1) : -(yn - yn1) > epsilon);
+	} while ((yn - yn1) > 0 ? (yn - yn1) : -(yn - yn1) > eps);
 	
 	return yn1;
 }
 
-double log(double x, double n, double eps){
-	return ln(x, eps) / ln(n, eps);
+double log10(double x){
+	double eps = 0.00001;
+	return log(x, eps) / log(n, eps);
 }
