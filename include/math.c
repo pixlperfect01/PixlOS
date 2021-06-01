@@ -69,6 +69,39 @@ double exp(double x){
 	return out;
 }
 
-double frexp(double x, int *exponent){
-	
+double frexp(double x, int *e)
+{
+	union { double d; uint64_t i; } y = { x };
+	int ee = y.i>>52 & 0x7ff;
+
+	if (!ee) {
+		if (x) {
+			x = frexp(x*0x1p64, e);
+			*e -= 64;
+		} else *e = 0;
+		return x;
+	} else if (ee == 0x7ff) {
+		return x;
+	}
+
+	*e = ee - 0x3fe;
+	y.i &= 0x800fffffffffffffull;
+	y.i |= 0x3fe0000000000000ull;
+	return y.d;
+}
+
+double ldexp(double x, int e){
+	return x*pow(2, e);
+}
+
+double log(double x){
+	int c = 1;
+	double f = x;
+	while(!(1.41421356>(f+1)&&0.70710678<(f+1))){
+		double a = pow(2, c);
+		f = x / a - 1;
+		c <<= 1;
+	}
+	double s = f/(1+f);
+	// TBC
 }
