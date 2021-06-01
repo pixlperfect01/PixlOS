@@ -68,3 +68,7 @@ double exp(double x){
 	}
 	return out;
 }
+
+double frexp(double x, int *exponent){
+	
+}
