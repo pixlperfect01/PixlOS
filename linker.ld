@@ -11,7 +11,7 @@ SECTIONS
     /* We place the .stivale2hdr section containing the header in its own section, */
     /* and we use the KEEP directive on it to make sure it doesn't get discarded. */
     .stivale2hdr : {
-        KEEP(*(.stivale2hdr))
+        KEEP(*(.stivalehdr))
     }
  
     /* Then let's place all the other traditional executable sections afterwards. */
